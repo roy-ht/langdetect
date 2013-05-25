@@ -9,6 +9,7 @@
 
 using std::string;
 using std::map;
+using std::vector;
 
 namespace langdetect {
     int const Detector::DEFAULT_TRIAL = 7;
@@ -24,7 +25,7 @@ namespace langdetect {
         if(length == 0) return MSG_FAIL_EMPTY;
         NgramStorage& storage = NgramStorage::instance();
         for(int i = 0; i < trial_; ++i) {
-            map<string, double> scores;
+            vector<double> scores(0, 1.0 / storage.langnum_);  // priorはuniformに固定する
             double alpha = alpha_ + random_(ALPHA_WIDTH * 2) - ALPHA_WIDTH;
             for(int j = 0;;) {
                 // 乱数からどのn-gramを使うかを決定する

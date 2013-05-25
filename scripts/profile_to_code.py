@@ -25,10 +25,12 @@ def main():
     #output files
     template = '''// coding: utf-8
 // This file was automatically created.
-#include<map>
+#include <vector>
+#include "./ngram_storage.h"
 namespace langdetect {
-    char const * NgramStorage::langlist_[$langsize] = {$langlist};
-    std::map<std::string, double[$langsize]> const NgramStorage::probmap_ = {
+    size_t const NgramStorage::langnum_ = $langsize;
+    std::vector<std::string> NgramStorage::langlist_ = {$langlist};
+    NgramStorage::ProbMap const NgramStorage::probmap_ = {
         $probmap
     }
 }

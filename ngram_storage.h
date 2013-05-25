@@ -8,9 +8,13 @@
 namespace langdetect {
 
 class NgramStorage {
-    typedef std::vector<std::pair<std::string, double> > ProbList;
+    public:
+        typedef std::vector<double> ProbList;
+        typedef std::map<std::string, ProbList> ProbMap;
     private:
-        std::map<std::string, ProbList> probmap_;
+        static size_t const langnum_;
+        static std::vector<std::string> const langlist_;
+        static ProbMap probmap_;
         NgramStorage();
         NgramStorage(NgramStorage const &);
         NgramStorage& operator=(NgramStorage const &);
