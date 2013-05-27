@@ -12,7 +12,6 @@ class NgramStorage {
         typedef std::vector<double> ProbList;
         typedef std::map<std::string, ProbList> ProbMap;
     private:
-        static size_t const langnum_;
         static std::vector<std::string> const langlist_;
         static ProbMap probmap_;
         NgramStorage();

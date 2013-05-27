@@ -28,7 +28,6 @@ def main():
 #include <vector>
 #include "./ngram_storage.h"
 namespace langdetect {
-    size_t const NgramStorage::langnum_ = $langsize;
     std::vector<std::string> NgramStorage::langlist_ = {$langlist};
     NgramStorage::ProbMap const NgramStorage::probmap_ = {
         $probmap
@@ -37,7 +36,7 @@ namespace langdetect {
 '''
     langlist_s = ', '.join(langlist)
     probmap_s = ',\n'.join('{{"{0}", {{{1}}}}}'.format(x, ', '.join('0' if z == 0 else '{:.16e}'.format(z) for z in y)) for x, y in d.items())
-    output = string.Template(template).substitute(langsize=len(langlist), langlist=langlist_s, probmap=probmap_s)
+    output = string.Template(template).substitute(langlist=langlist_s, probmap=probmap_s)
     sys.stdout.buffer.write(output.encode('utf-8'))
 
 

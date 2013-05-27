@@ -6,6 +6,26 @@
 
 namespace langdetect {
 
+
+class Detected {
+    public:
+        Detected(std::string const &name, double const &score);
+        Detected();
+        bool operator==(Detected const &);
+        bool operator!=(Detected const &);
+        bool operator<(Detected const &);
+        bool operator>(Detected const &);
+        bool operator<=(Detected const &);
+        bool operator>=(Detected const &);
+        void name(std::string &name);
+        std::string const & name();
+        void score(double const &score);
+        double const & score();
+    private:
+        std::string name_;
+        double score_;
+};
+
 class Detector {
     public:
         static int const DEFAULT_TRIAL;
@@ -21,8 +41,6 @@ class Detector {
     private:
         int trial_;
         double alpha_;
-        /// utility function, returns [0 max) random value
-        double random_(double const &nmax);
 };
 
 }
