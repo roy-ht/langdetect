@@ -3,6 +3,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace langdetect {
 
@@ -11,16 +12,16 @@ class Detected {
     public:
         Detected(std::string const &name, double const &score);
         Detected();
-        bool operator==(Detected const &);
-        bool operator!=(Detected const &);
-        bool operator<(Detected const &);
-        bool operator>(Detected const &);
-        bool operator<=(Detected const &);
-        bool operator>=(Detected const &);
-        void name(std::string &name);
-        std::string const & name();
+        bool operator==(Detected const &) const;
+        bool operator!=(Detected const &) const;
+        bool operator<(Detected const &) const;
+        bool operator>(Detected const &) const;
+        bool operator<=(Detected const &) const;
+        bool operator>=(Detected const &) const;
+        void name(std::string const &name);
+        std::string const & name() const;
         void score(double const &score);
-        double const & score();
+        double const & score() const;
     private:
         std::string name_;
         double score_;
@@ -37,10 +38,14 @@ class Detector {
         static int const BASE_FREQ;
         static std::string const UNKNOWN_LANG;
 
-        std::string detect(char const *data, size_t const &length);
+        Detector();
+        Detected detect(char const *data, size_t const &length);
     private:
         int trial_;
         double alpha_;
+        void update_scores_(std::string const &ngram, std::vector<double> &scores, double const &alpha);
+        std::string read_ngram_(char const *data, size_t const &len, size_t const &idx, size_t const &num);
+        double normalize_(std::vector<double> &scores);
 };
 
 }

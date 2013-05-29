@@ -19,17 +19,20 @@ void message(char const *path, char const *msg) {
 void detect(char const *path) {
     Detector detector;
     ifstream ifs(path);
-    if(ifs.is_open()) message(path, "failed to open");
-    char buf[MAX_READ_SIZE];  // read max 4k bytes
-    ifs.read(buf, MAX_READ_SIZE);
-    std::streamsize readcount = ifs.gcount();
-    string result = detector.detect(buf, readcount);
-    message(path, result.c_str());
+    if(!ifs.is_open()) {
+        message(path, "failed to open");
+    } else {
+        char buf[MAX_READ_SIZE];  // read max 4k bytes
+        ifs.read(buf, MAX_READ_SIZE);
+        std::streamsize readcount = ifs.gcount();
+        langdetect::Detected result = detector.detect(buf, readcount);
+        message(path, result.name().c_str());
+    }
 }
 
 
 int main(int argc, char const *argv[]) {
-    for(int i = 1; i < argc; ++argc) {
+    for(int i = 1; i < argc; ++i) {
         detect(argv[i]);
     }
     return 0;
