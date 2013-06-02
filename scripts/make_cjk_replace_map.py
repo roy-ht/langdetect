@@ -9,7 +9,7 @@ import re
 def main():
     spath = sys.argv[1]
     template = string.Template(u'''{
-    $maps,
+    $maps
 }
 ''')
     maps = []
