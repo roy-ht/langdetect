@@ -12,5 +12,6 @@ def configure(conf):
 
 def build(bld):
         bld.program(source='langdetect.cpp', target='langdetect', use='langdetect')
-        bld.shlib(source=['detector.cpp', 'ngram_storage.cpp', 'gram_sequence.cpp', 'const.cpp', 'exception.cpp'],
+        bld.shlib(source=['detector.cpp', 'ngram_storage.cpp', 'gram_sequence.cpp',
+                          'const.cpp', 'exception.cpp', 'unicodedata.cpp', 'kanji_normalize_map.cpp'],
                   target='langdetect')
