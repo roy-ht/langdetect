@@ -16,7 +16,7 @@ CodeSequence::CodeSequence(char const *data, size_t const &length) {
     string buf(data, length);
     cleanchar_(buf);
     size_t cursor(0);
-    while(cursor < string::npos) {
+    while(cursor < buf.length()) {
         uint32_t code = readchar_(buf, cursor);
         if(cursor == string::npos && code == 0) break;  // no more data
         codes_.push_back(code);
@@ -30,8 +30,9 @@ vector<string> CodeSequence::tongram() {
     vector<string> ngrams;
     string ngram;
     for(size_t i = 0; i < codes_.size(); ++i) {
-        ngram += string(reinterpret_cast<char *>(&codes_[i]), 4);
-        if(ngram.length() > 12) ngram.erase(ngram.begin());
+        // std::cout << "code = " << std::hex << codes_[i] << std::endl;
+        ngram.append(reinterpret_cast<char *>(&codes_[i]), 4);
+        if(ngram.length() > 12) ngram.erase(0, 4);
         if(!ngram.empty()) ngrams.push_back(ngram);
     }
     return ngrams;
@@ -62,8 +63,10 @@ uint32_t CodeSequence::readchar_(string const &data, size_t &cursor) {
     for(size_t i = 1; i < clen; ++i) {
         code = (code << 6) | (data[cursor + i] & 0x3f);
     }
-    cursor += clen;
     if(cursor == data.length()) cursor = string::npos;  // finish sign
+    // std::cout << "str = [" << data.substr(cursor, clen) << "]" << std::endl;
+    // std::cout << "code(1) = " << std::hex << code << std::endl;
+    cursor += clen;
     return code;
 }
 
