@@ -8,9 +8,8 @@ import re
 
 def main():
     spath = sys.argv[1]
-    template = string.Template(u'''{
-    $maps
-}
+    template = string.Template(u'''{$tgts}
+{$sources}
 ''')
     maps = []
     for line in open(spath):
@@ -19,9 +18,10 @@ def main():
             continue
         codestr = line.split('=', 1)[1]
         codes = ['0x' + x[2:] for x in re.findall(r'\\u[0-9a-fA-F]+', codestr)]
-        cstr = ', '.join('{{{0}, {1}}}'.format(codes[0], x) for x in codes[1:])
-        maps.append(cstr)
-    print(template.substitute(maps=',\n'.join(maps)))
+        maps.append(codes)
+    tgtstr = ','.join(x[0] for x in maps)
+    sourcestr = ',\n'.join('{' + ','.join(x[1:]) + '}' for x in maps)
+    print(template.substitute(tgts=tgtstr, sources=sourcestr))
 
 if __name__ == '__main__':
     main()

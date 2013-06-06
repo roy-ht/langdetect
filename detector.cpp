@@ -7,7 +7,7 @@
 
 #include "./detector.h"
 #include "./ngram_storage.h"
-#include "./gram_sequence.h"
+#include "./code_sequence.h"
 
 #define LANG_FAIL_EMPTY Detected("fail_empty_data", 0.0)
 
@@ -30,13 +30,8 @@ namespace langdetect {
     Detected Detector::detect(char const *data, size_t const &length) {
         if(length == 0) return LANG_FAIL_EMPTY;
         NgramStorage& storage = NgramStorage::instance();
-        GramSequence gram_sequence(data, length);
-        vector<string> grams;
-        for(size_t i = 0; i < gram_sequence.size(); ++i) {
-            for(size_t j = 1; j <= 3 && i + j <= gram_sequence.size(); ++j) {
-                grams.push_back(gram_sequence.getngram(i, j));
-            }
-        }
+        CodeSequence codesequence(data, length);
+        vector<string> grams = codesequence.tongram();
         std::random_device rd;
         std::mt19937 gen(rd());
         std::normal_distribution<> gaussian;
@@ -66,6 +61,9 @@ namespace langdetect {
             detecteds[i].name(storage.langlist()[i]);
             detecteds[i].score(finalscores[i]);
         }
+        // for(auto &d : detecteds) {
+        //     std::cout << d.name() << ", " << d.score() << std::endl;
+        // }
         // sort
         std::sort(detecteds.begin(), detecteds.end());
         return detecteds.back();
@@ -76,10 +74,15 @@ namespace langdetect {
         if(storage.has(ngram)) {
             double weight = alpha / BASE_FREQ;
             auto plist = storage.get(ngram);
+            // if(ngram.length() == 4) std::cout << reinterpret_cast<uint32_t *>(*ngram.data());
+            // else if(ngram.length() == 8) std::cout << reinterpret_cast<uint32_t *>(*ngram.data()) << " " << reinterpret_cast<uint32_t *>(*ngram.data() + 4);
+            // else if(ngram.length() == 12) std::cout << reinterpret_cast<uint32_t *>(*ngram.data()) << " " << reinterpret_cast<uint32_t *>(*ngram.data() + 4) << " " << reinterpret_cast<uint32_t *>(*ngram.data() + 8);
+            // std::cout << std::endl;
             for(size_t i = 0; i < plist.size(); ++i) {
-                // std::cout << "score[" << storage.langlist()[i] << "] = " << plist[i] << std::endl;
+                // std::cout << " [" << storage.langlist()[i] << "]= " << plist[i];
                 scores[i] *= weight + plist[i];
             }
+            // std::cout << std::endl;
         }
     }
 
