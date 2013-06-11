@@ -4,6 +4,7 @@
 #include <iostream>
 #include "./exception.h"
 #include "./unicode_data.h"
+#include "./ngram_storage.h"
 #include "./normalizer.h"
 
 using std::string;
@@ -24,16 +25,42 @@ CodeSequence::CodeSequence(char const *data, size_t const &length) {
     rough_judge_();
     Normalizer& normalizer = Normalizer::instance();
     normalizer.normalize(codes_);
+    // for(size_t i = 0; i < codes_.size(); ++i) std::cout << "normalized: " << std::hex << codes_[i] << std::endl;
 }
 
 vector<string> CodeSequence::tongram() {
+    uint32_t const whitespace = 0x0020;
+    string wsstr(reinterpret_cast<char const *>(&whitespace), 4);
     vector<string> ngrams;
-    string ngram;
+    string ngram(wsstr);
+    bool iscapital = false;
     for(size_t i = 0; i < codes_.size(); ++i) {
+        string lastone = ngram.substr(ngram.length() - 4, 4);
+        if(lastone == wsstr) {
+            ngram = string(wsstr);
+            iscapital = false;
+            if(codes_[i] != 0x0020) ngram.append(reinterpret_cast<char *>(&codes_[i]), 4);
+        } else {
+            ngram.append(reinterpret_cast<char *>(&codes_[i]), 4);
+            if(ngram.length() > 12) ngram.erase(0, 4);
+        }
+        if(UnicodeData::isupper(codes_[i])) {
+            if(UnicodeData::isupper(*reinterpret_cast<uint32_t const *>(lastone.data()))) iscapital = true;
+        } else {
+            iscapital = false;
+        }
+
+        // append to ngrams
         // std::cout << "code = " << std::hex << codes_[i] << std::endl;
-        ngram.append(reinterpret_cast<char *>(&codes_[i]), 4);
-        if(ngram.length() > 12) ngram.erase(0, 4);
-        if(!ngram.empty()) ngrams.push_back(ngram);
+        if(!iscapital) {
+            for(size_t i = 0; i < ngram.length(); i += 4) {
+                string apstr = ngram.substr(i);
+                if(apstr == wsstr) continue;
+                if(NgramStorage::instance().has(apstr)) ngrams.push_back(apstr);
+                // for(size_t i = 0; i < apstr.length(); ++i) std::cout << std::hex << (int)*(uint8_t *)(apstr.data() + i) << " ";
+                // std::cout << std::endl;
+            }
+        }
     }
     return ngrams;
 }
@@ -86,24 +113,22 @@ void CodeSequence::cleanchar_(string &data) {
             isurl = true;
             start = p - 3;
         } else if(p >= 4) {
-            if(data.compare(p - 4, 4, "http") == 0 ||
-                    data.compare(p - 4, 4, "file") == 0) {
+            if(data.compare(p - 4, 4, "http") == 0 || data.compare(p - 4, 4, "file") == 0) {
                 isurl = true;
                 start = p - 4;
-                if(p >= 5) {
-                    if(data.compare(p - 5, 5, "https") == 0) {
-                        isurl = true;
-                        start = p - 5;
-                    }
+            } else if(p >= 5) {
+                if(data.compare(p - 5, 5, "https") == 0) {
+                    isurl = true;
+                    start = p - 5;
                 }
             }
-            if(isurl) {
-                // 終わりを探す
-                size_t end = data.find_first_not_of("-_.?&~;+=/#" + alnum);
-                if(end - start <= 2076) {
-                    data.replace(start, end - start, " ");
-                    cursor = start + 1;
-                }
+        }
+        if(isurl) {
+            // 終わりを探す
+            size_t end = data.find_first_not_of("-_.?&~;+=/#" + alnum, p + 3);
+            if(end - start <= 2076) {
+                data.replace(start, end - start, " ");
+                cursor = start + 1;
             }
         }
     }

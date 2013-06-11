@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <set>
 
 namespace langdetect {
 
@@ -229,6 +230,9 @@ enum UnicodeBlock {
 class UnicodeData {
     public:
         static UnicodeBlock unicodeblock(uint32_t const &code);
+        static bool isupper(uint32_t const &code);
+    private:
+        static std::set<uint32_t> const uppercases_;
 };
 
 }

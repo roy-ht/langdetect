@@ -74,9 +74,7 @@ namespace langdetect {
         if(storage.has(ngram)) {
             double weight = alpha / BASE_FREQ;
             auto plist = storage.get(ngram);
-            // if(ngram.length() == 4) std::cout << reinterpret_cast<uint32_t *>(*ngram.data());
-            // else if(ngram.length() == 8) std::cout << reinterpret_cast<uint32_t *>(*ngram.data()) << " " << reinterpret_cast<uint32_t *>(*ngram.data() + 4);
-            // else if(ngram.length() == 12) std::cout << reinterpret_cast<uint32_t *>(*ngram.data()) << " " << reinterpret_cast<uint32_t *>(*ngram.data() + 4) << " " << reinterpret_cast<uint32_t *>(*ngram.data() + 8);
+            // for(size_t i = 0; i < ngram.length(); ++i) std::cout << std::hex << (int)*(uint8_t *)(ngram.data() + i) << " ";
             // std::cout << std::endl;
             for(size_t i = 0; i < plist.size(); ++i) {
                 // std::cout << " [" << storage.langlist()[i] << "]= " << plist[i];
