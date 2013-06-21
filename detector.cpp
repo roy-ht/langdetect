@@ -32,6 +32,7 @@ namespace langdetect {
         NgramStorage& storage = NgramStorage::instance();
         CodeSequence codesequence(data, length);
         vector<string> grams = codesequence.tongram();
+        if(grams.empty()) return Detected(UNKNOWN_LANG, 0.0);
         std::random_device rd;
         std::mt19937 gen(rd());
         std::normal_distribution<> gaussian;
