@@ -7,7 +7,8 @@ def options(opt):
 
 def configure(conf):
         conf.load('compiler_cxx')
-        conf.env.CXXFLAGS = ['-Wall', '-O2', '-g', '--std=c++0x']
+        conf.env.CXXFLAGS = ['-Wall', '-O3', '--std=c++0x']
+        # conf.env.CXXFLAGS = ['-Wall', '-O2', '-g', '--std=c++0x']
 
 
 def build(bld):
