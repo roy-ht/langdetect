@@ -16,6 +16,7 @@ using std::map;
 using std::vector;
 
 namespace langdetect {
+    size_t const Detector::MAX_READ_SIZE = 12288;
     int const Detector::DEFAULT_TRIAL = 7;
     double const Detector::DEFAULT_ALPHA = 0.5;
     double const Detector::ALPHA_WIDTH = 0.05;
@@ -30,7 +31,9 @@ namespace langdetect {
     Detected Detector::detect(char const *data, size_t const &length) {
         if(length == 0) return LANG_FAIL_EMPTY;
         NgramStorage& storage = NgramStorage::instance();
-        CodeSequence codesequence(data, length);
+        size_t rlen = length;
+        if(rlen > MAX_READ_SIZE) rlen = MAX_READ_SIZE;
+        CodeSequence codesequence(data, rlen);
         vector<string> grams = codesequence.tongram();
         if(grams.empty()) return Detected(UNKNOWN_LANG, 0.0);
         std::random_device rd;

@@ -29,6 +29,7 @@ class Detected {
 
 class Detector {
     public:
+        static size_t const MAX_READ_SIZE;
         static int const DEFAULT_TRIAL;
         static double const DEFAULT_ALPHA;
         static double const ALPHA_WIDTH;
