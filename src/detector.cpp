@@ -9,7 +9,7 @@
 #include "./ngram_storage.h"
 #include "./code_sequence.h"
 
-#define LANG_FAIL_EMPTY Detected("fail_empty_data", 0.0)
+#define LANG_FAIL_EMPTY Detected("empty", 0.0)
 
 using std::string;
 using std::map;
