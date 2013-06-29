@@ -1,6 +1,5 @@
-// 言語判定器
-// UTF-8文字列であることを仮定する
-#pragma once
+#ifndef __LANGDETECT_DETECTOR_H_
+#define __LANGDETECT_DETECTOR_H_
 
 #include <string>
 #include <vector>
@@ -29,7 +28,7 @@ class Detected {
 
 class Detector {
     public:
-        static size_t const MAX_READ_SIZE;
+        static unsigned int const MAX_READ_SIZE;
         static int const DEFAULT_TRIAL;
         static double const DEFAULT_ALPHA;
         static double const ALPHA_WIDTH;
@@ -40,7 +39,7 @@ class Detector {
         static std::string const UNKNOWN_LANG;
 
         Detector();
-        Detected detect(char const *data, size_t const &length);
+        Detected detect(char const *data, unsigned int const &length);
     private:
         int trial_;
         double alpha_;
@@ -50,3 +49,5 @@ class Detector {
 };
 
 }
+
+#endif

@@ -16,7 +16,7 @@ using std::map;
 using std::vector;
 
 namespace langdetect {
-    size_t const Detector::MAX_READ_SIZE = 12288;
+    unsigned int const Detector::MAX_READ_SIZE = 12288;
     int const Detector::DEFAULT_TRIAL = 7;
     double const Detector::DEFAULT_ALPHA = 0.5;
     double const Detector::ALPHA_WIDTH = 0.05;
@@ -28,7 +28,7 @@ namespace langdetect {
 
     Detector::Detector() : trial_(DEFAULT_TRIAL), alpha_(DEFAULT_ALPHA) {}
 
-    Detected Detector::detect(char const *data, size_t const &length) {
+    Detected Detector::detect(char const *data, unsigned int const &length) {
         if(length == 0) return LANG_FAIL_EMPTY;
         NgramStorage& storage = NgramStorage::instance();
         size_t rlen = length;
@@ -129,4 +129,29 @@ namespace langdetect {
     std::string const & Detected::name() const {return name_;}
     void Detected::score(double const &score) {score_ = score;}
     double const & Detected::score() const {return score_;}
+}
+
+#include "./detector_c.h"
+
+LANGDETECT_LANGS langdetect_detect(char const *data, unsigned int const &length) {
+    double score = 0.0;
+    return langdetect_detect_with_score(data, length, score);
+}
+
+LANGDETECT_LANGS langdetect_detect_with_score(char const *data, unsigned int const &length, double &score) {
+    langdetect::Detector detector;
+    langdetect::Detected result = detector.detect(data, length);
+    score = result.score();
+    string name = result.name();
+    langdetect::NgramStorage& storage = langdetect::NgramStorage::instance();
+    std::vector<std::string>::const_iterator itr = std::find(storage.langlist().begin(), storage.langlist().end(), name);
+    if(itr != storage.langlist().end()) {
+        return static_cast<LANGDETECT_LANGS>(itr - storage.langlist().begin());
+    } else if(name == "empty") {
+        return LANGDETECT_EMPTY;
+    } else if(name == "unknown") {
+        return LANGDETECT_UNKNOWN;
+    } else {
+        return LANGDETECT_ERROR;
+    }
 }
