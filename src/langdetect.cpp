@@ -1,8 +1,10 @@
 #include <string>
 #include <map>
-#include <random>
+#include <cstdlib>
+#include <cmath>
 #include <algorithm>
 #include <iostream>
+#include <stdexcept>
 #include <iomanip>
 
 #include "./langdetect.h"
@@ -10,6 +12,7 @@
 #include "./code_sequence.h"
 
 #define LANG_FAIL_EMPTY Detected("empty", 0.0)
+#define MATH_PI 3.1415926535897932384626433832795
 
 using std::string;
 using std::map;
@@ -36,17 +39,13 @@ namespace langdetect {
         CodeSequence codesequence(data, rlen);
         vector<string> grams = codesequence.tongram();
         if(grams.empty()) return Detected(UNKNOWN_LANG, 0.0);
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::normal_distribution<> gaussian;
-        std::uniform_int_distribution<> uniform_idx(0, grams.size() - 1);
         vector<double> finalscores(storage.LANGUAGE_SIZE, 0);
         for(int i = 0; i < trial_; ++i) {
             vector<double> scores(storage.LANGUAGE_SIZE, 1.0 / storage.LANGUAGE_SIZE);  // priorはuniformに固定する
-            double alpha = alpha_ + gaussian(gen) * ALPHA_WIDTH;
+            double alpha = alpha_ + random_gaussian_() * ALPHA_WIDTH;
             for(int j = 0;;) {
                 // 乱数からどのn-gramを使うかを決定する
-                size_t tgt_idx = uniform_idx(gen);
+                size_t tgt_idx = random_range_(0, grams.size() - 1);
                 string ngram = grams[tgt_idx];
                 if(ngram.empty()) continue;
                 update_scores_(ngram, scores, alpha);
@@ -100,6 +99,21 @@ namespace langdetect {
         return maxp;
     }
 
+    double Detector::random_uniform_() {
+        return (double)(std::rand()) / RAND_MAX;
+    }
+
+    double Detector::random_gaussian_() {
+       double alpha = random_uniform_();
+       while(alpha == 0) alpha = random_uniform_();
+       double beta = random_uniform_();
+       return std::sqrt(- 2 * std::log(alpha)) * std::sin(2 * MATH_PI * beta);
+    }
+
+    int Detector::random_range_(int const &minnum, int const &maxnum) {
+        if(minnum > maxnum) throw std::runtime_error("min exceeds maximum");
+        return static_cast<int>(std::floor(minnum + random_uniform_() * (maxnum - minnum)));
+    }
 
     Detected::Detected(string const &name, double const &score)
     : name_(name), score_(score) {}

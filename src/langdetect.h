@@ -46,6 +46,9 @@ class Detector {
         void update_scores_(std::string const &ngram, std::vector<double> &scores, double const &alpha);
         std::string read_ngram_(char const *data, size_t const &len, size_t const &idx, size_t const &num);
         double normalize_(std::vector<double> &scores);
+        double random_uniform_();
+        double random_gaussian_();
+        int random_range_(int const &minnum, int const &maxnum);
 };
 
 }
