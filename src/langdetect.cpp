@@ -40,9 +40,9 @@ namespace langdetect {
         std::mt19937 gen(rd());
         std::normal_distribution<> gaussian;
         std::uniform_int_distribution<> uniform_idx(0, grams.size() - 1);
-        vector<double> finalscores(storage.langlist().size(), 0);
+        vector<double> finalscores(storage.LANGUAGE_SIZE, 0);
         for(int i = 0; i < trial_; ++i) {
-            vector<double> scores(storage.langlist().size(), 1.0 / storage.langlist().size());  // priorはuniformに固定する
+            vector<double> scores(storage.LANGUAGE_SIZE, 1.0 / storage.LANGUAGE_SIZE);  // priorはuniformに固定する
             double alpha = alpha_ + gaussian(gen) * ALPHA_WIDTH;
             for(int j = 0;;) {
                 // 乱数からどのn-gramを使うかを決定する
@@ -60,9 +60,9 @@ namespace langdetect {
             }
         }
 
-        vector<Detected> detecteds(storage.langlist().size());
+        vector<Detected> detecteds(storage.LANGUAGE_SIZE);
         for(size_t i = 0; i < finalscores.size(); ++i) {
-            detecteds[i].name(storage.langlist()[i]);
+            detecteds[i].name(storage.lang_fromindex(i));
             detecteds[i].score(finalscores[i]);
         }
         // for(auto &d : detecteds) {
@@ -81,7 +81,7 @@ namespace langdetect {
             // for(size_t i = 0; i < ngram.length(); ++i) std::cout << std::hex << (int)*(uint8_t *)(ngram.data() + i) << " ";
             // std::cout << std::endl;
             for(size_t i = 0; i < plist.size(); ++i) {
-                // std::cout << " [" << storage.langlist()[i] << "]= " << plist[i];
+                // std::cout << " [" << storage.lang_fromindex(i) << "]= " << plist[i];
                 scores[i] *= weight + plist[i];
             }
             // std::cout << std::endl;
@@ -144,9 +144,9 @@ LANGDETECT_LANGS langdetect_detect_with_score(char const *data, unsigned int con
     score = result.score();
     string name = result.name();
     langdetect::NgramStorage& storage = langdetect::NgramStorage::instance();
-    std::vector<std::string>::const_iterator itr = std::find(storage.langlist().begin(), storage.langlist().end(), name);
-    if(itr != storage.langlist().end()) {
-        return static_cast<LANGDETECT_LANGS>(itr - storage.langlist().begin());
+    size_t langindex = storage.langindex(name);
+    if(langindex < storage.LANGUAGE_SIZE) {
+        return static_cast<LANGDETECT_LANGS>(langindex);
     } else if(name == "empty") {
         return LANGDETECT_EMPTY;
     } else if(name == "unknown") {
