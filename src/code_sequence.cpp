@@ -2,7 +2,7 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
-#include "./exception.h"
+#include <stdexcept>
 #include "./unicode_data.h"
 #include "./ngram_storage.h"
 #include "./normalizer.h"
@@ -66,8 +66,8 @@ vector<string> CodeSequence::tongram() {
 }
 
 uint32_t CodeSequence::readchar_(string const &data, size_t &cursor) {
-    if(data.length() == 0) throw DetectError("empty data");
-    if(cursor >= data.length()) throw DetectError("scan error");
+    if(data.length() == 0) throw std::runtime_error("empty data");
+    if(cursor >= data.length()) throw std::runtime_error("scan error");
     size_t clen(0);
     uint32_t code = 0 | data[cursor];
     if((data[cursor] & 0x80) == 0) clen = 1;
@@ -81,7 +81,7 @@ uint32_t CodeSequence::readchar_(string const &data, size_t &cursor) {
         clen = 4;
         code &= 0x7;
     } else {
-        throw DetectError("can't encode string: may not utf-8 encoding");
+        throw std::runtime_error("can't encode string: may not utf-8 encoding");
     }
     if(cursor + clen > data.length()) {  // 中途半端なバイト列が末尾にある。例外は投げないで、失敗を伝える。
         cursor = string::npos;

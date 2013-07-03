@@ -1,8 +1,8 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <stdexcept>
 #include "./ngram_storage.h"
-#include "./exception.h"
 
 using std::string;
 using std::vector;
@@ -53,7 +53,7 @@ namespace langdetect {
     }
 
     string NgramStorage::lang_fromindex(size_t const &idx) {
-        if(idx >= LANGUAGE_SIZE) throw DetectError("language index range over flow");
+        if(idx >= LANGUAGE_SIZE) throw std::runtime_error("language index range over flow");
         return langlist_[idx];
     }
 }
