@@ -39,9 +39,9 @@ namespace langdetect {
         CodeSequence codesequence(data, rlen);
         vector<string> grams = codesequence.tongram();
         if(grams.empty()) return Detected(UNKNOWN_LANG, 0.0);
-        vector<double> finalscores(storage.LANGUAGE_SIZE, 0);
+        vector<double> finalscores(storage.langsize(), 0);
         for(int i = 0; i < trial_; ++i) {
-            vector<double> scores(storage.LANGUAGE_SIZE, 1.0 / storage.LANGUAGE_SIZE);  // priorはuniformに固定する
+            vector<double> scores(storage.langsize(), 1.0 / storage.langsize());  // priorはuniformに固定する
             double alpha = alpha_ + random_gaussian_() * ALPHA_WIDTH;
             for(int j = 0;;) {
                 // 乱数からどのn-gramを使うかを決定する
@@ -59,7 +59,7 @@ namespace langdetect {
             }
         }
 
-        vector<Detected> detecteds(storage.LANGUAGE_SIZE);
+        vector<Detected> detecteds(storage.langsize());
         for(size_t i = 0; i < finalscores.size(); ++i) {
             detecteds[i].name(storage.lang_fromindex(i));
             detecteds[i].score(finalscores[i]);
@@ -159,7 +159,7 @@ LANGDETECT_LANGS langdetect_detect_with_score(char const *data, unsigned int con
     string name = result.name();
     langdetect::NgramStorage& storage = langdetect::NgramStorage::instance();
     size_t langindex = storage.langindex(name);
-    if(langindex < storage.LANGUAGE_SIZE) {
+    if(langindex < storage.langsize()) {
         return static_cast<LANGDETECT_LANGS>(langindex);
     } else if(name == "empty") {
         return LANGDETECT_EMPTY;

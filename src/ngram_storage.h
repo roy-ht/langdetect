@@ -11,10 +11,9 @@ class NgramStorage {
     public:
         typedef std::vector<double> ProbList;
         typedef std::unordered_map<std::string, ProbList> ProbMap;
-        static size_t const LANGUAGE_SIZE = 53;
     private:
         static std::string const ngramdata_;
-        static std::string const langlist_[LANGUAGE_SIZE];
+        static std::vector<std::string> const langlist_;
         ProbMap probmap_;
         NgramStorage();
         NgramStorage(NgramStorage const &) = default;
@@ -23,8 +22,9 @@ class NgramStorage {
         static NgramStorage& instance();
         ProbList const & get(std::string const &s);
         bool has(std::string const &s);
-        size_t langindex(std::string const &name);
         std::string lang_fromindex(size_t const &idx);
+        size_t langsize();
+        size_t langindex(std::string const &name);
 };
 
 }

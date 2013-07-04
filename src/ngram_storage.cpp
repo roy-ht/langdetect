@@ -18,7 +18,7 @@ namespace langdetect {
             string ngram(ngramdata_.data() + cur, ngramsize);
             cur += ngramsize;
             // std::cout << "ngram(size=" << (int)ngramsize << "): " << ngram << std::endl;
-            probmap_[ngram] = ProbList(LANGUAGE_SIZE, 0.0);
+            probmap_[ngram] = ProbList(langsize(), 0.0);
             uint8_t freqsize = ngramdata_[cur++];
             // std::cout << "freqsize: " << (int)freqsize << std::endl;
             for(size_t i = 0; i < freqsize; ++i) {
@@ -46,14 +46,18 @@ namespace langdetect {
     }
 
     size_t NgramStorage::langindex(string const &name) {
-        for(size_t i = 0; i < LANGUAGE_SIZE; ++i) {
+        for(size_t i = 0; i < langsize(); ++i) {
             if(langlist_[i] == name) return i;
         }
-        return LANGUAGE_SIZE;  // exceeds maximum language size if error
+        return langsize();  // exceeds maximum language size if error
     }
 
     string NgramStorage::lang_fromindex(size_t const &idx) {
-        if(idx >= LANGUAGE_SIZE) throw std::runtime_error("language index range over flow");
+        if(idx >= langsize()) throw std::runtime_error("language index range over flow");
         return langlist_[idx];
+    }
+
+    size_t NgramStorage::langsize() {
+        return langlist_.size();
     }
 }

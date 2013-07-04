@@ -10,8 +10,12 @@ def configure(conf):
 
 
 def build(bld):
-        bld.program(source='command.cpp', target='langdetect', use='langdetect')
-        bld.shlib(source=['langdetect.cpp', 'ngram_storage.cpp', 'code_sequence.cpp', 'const.cpp',
-                          'unicode_data.cpp', 'normalizer.cpp'],
-                  target='langdetect')
-        bld.install_files('${PREFIX}/include', ['langdetect.h', 'langdetect_c.h'])
+    libs = []
+    if 'clang++' in bld.env.CXX:
+        libs += ['c++']
+    bld.program(source='command.cpp', target='langdetect', use='langdetect', lib=libs)
+    bld.shlib(source=['langdetect.cpp', 'ngram_storage.cpp', 'code_sequence.cpp', 'const.cpp',
+              'unicode_data.cpp', 'normalizer.cpp'],
+              lib=libs,
+              target='langdetect')
+    bld.install_files('${PREFIX}/include', ['langdetect.h', 'langdetect_c.h'])
