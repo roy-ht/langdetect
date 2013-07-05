@@ -6,6 +6,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <iomanip>
+#include <cstring>
 
 #include "./langdetect.h"
 #include "./ngram_storage.h"
@@ -147,25 +148,19 @@ namespace langdetect {
 
 #include "./langdetect_c.h"
 
-LANGDETECT_LANGS langdetect_detect(char const *data, unsigned int const &length) {
+void langdetect_detect(char const *data, unsigned int const length, char lang[6]) {
     double score = 0.0;
-    return langdetect_detect_with_score(data, length, score);
+    langdetect_detect_with_score(data, length, lang, &score);
 }
 
-LANGDETECT_LANGS langdetect_detect_with_score(char const *data, unsigned int const &length, double &score) {
+void langdetect_detect_with_score(char const *data, unsigned int const length, char lang[6], double *score) {
     langdetect::Detector detector;
-    langdetect::Detected result = detector.detect(data, length);
-    score = result.score();
-    string name = result.name();
-    langdetect::NgramStorage& storage = langdetect::NgramStorage::instance();
-    size_t langindex = storage.langindex(name);
-    if(langindex < storage.langsize()) {
-        return static_cast<LANGDETECT_LANGS>(langindex);
-    } else if(name == "empty") {
-        return LANGDETECT_EMPTY;
-    } else if(name == "unknown") {
-        return LANGDETECT_UNKNOWN;
-    } else {
-        return LANGDETECT_ERROR;
+    try {
+        langdetect::Detected result = detector.detect(data, length);
+        *score = result.score();
+        memcpy(lang, result.name().c_str(), result.name().length() + 1);
+    } catch(std::runtime_error const &e) {
+        memcpy(lang, "null", 4);
+        lang[5] = '\0';
     }
 }

@@ -2,28 +2,15 @@
 #ifndef __LANGDETECT_DETECTOR_C_H_
 #define __LANGDETECT_DETECTOR_C_H_
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
-enum LANGDETECT_LANGS {
-    LANGDETECT_AF, LANGDETECT_CS, LANGDETECT_EN, LANGDETECT_FI, LANGDETECT_HI,
-    LANGDETECT_IT, LANGDETECT_LT, LANGDETECT_MR, LANGDETECT_PA, LANGDETECT_RU,
-    LANGDETECT_SQ, LANGDETECT_TE, LANGDETECT_UK, LANGDETECT_AR, LANGDETECT_DA,
-    LANGDETECT_ES, LANGDETECT_FR, LANGDETECT_HR, LANGDETECT_JA, LANGDETECT_LV,
-    LANGDETECT_NE, LANGDETECT_PL, LANGDETECT_SK, LANGDETECT_SV, LANGDETECT_TH,
-    LANGDETECT_UR, LANGDETECT_BG, LANGDETECT_DE, LANGDETECT_ET, LANGDETECT_GU,
-    LANGDETECT_HU, LANGDETECT_KN, LANGDETECT_MK, LANGDETECT_NL, LANGDETECT_PT,
-    LANGDETECT_SL, LANGDETECT_SW, LANGDETECT_TL, LANGDETECT_VI, LANGDETECT_BN,
-    LANGDETECT_EL, LANGDETECT_FA, LANGDETECT_HE, LANGDETECT_ID, LANGDETECT_KO,
-    LANGDETECT_ML, LANGDETECT_NO, LANGDETECT_RO, LANGDETECT_SO, LANGDETECT_TA,
-    LANGDETECT_TR, LANGDETECT_ZH_CN, LANGDETECT_ZH_TW,
-    LANGDETECT_UNKNOWN,  // undecided
-    LANGDETECT_EMPTY,    // source data is empty
-    LANGDETECT_ERROR  // runtime error
-};
+void langdetect_detect(char const *data, unsigned int const length, char lang[6]);
+void langdetect_detect_with_score(char const *data, unsigned int const length, char lang[6], double *score);
 
-LANGDETECT_LANGS langdetect_detect(char const *data, unsigned int const &length);
-LANGDETECT_LANGS langdetect_detect_with_score(char const *data, unsigned int const &length, double &score);
-
+#ifdef __cplusplus
 }
+#endif
 
 #endif

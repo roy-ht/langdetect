@@ -14,6 +14,10 @@ void message(char const *path, char const *msg) {
     std::cout << path << ": " << msg << std::endl;
 }
 
+void message(char const *path, char const *msg, double const &score) {
+    std::cout << path << ": " << msg << ", " << score << std::endl;
+}
+
 int main(int argc, char const *argv[]) {
     Detector detector;
     for(int i = 1; i < argc; ++i) {
@@ -26,7 +30,7 @@ int main(int argc, char const *argv[]) {
             ifs.read(buf, MAX_READ_SIZE);
             std::streamsize readcount = ifs.gcount();
             langdetect::Detected result = detector.detect(buf, readcount);
-            message(path, result.name().c_str());
+            message(path, result.name().c_str(), result.score());
         }
     }
 }
