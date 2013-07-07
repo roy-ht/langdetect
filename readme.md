@@ -8,6 +8,43 @@ This is a C++ port of the language detection library [languge-detection](https:/
 本ライブラリは[language-detection](https://code.google.com/p/language-detection/)をC/C++用に移植したものです。
 素晴らしいライブラリを公開された事に感謝です。
 
+Supported Compiler
+==================
+
+GCC >= 4.4 and clang >= 3.1
+
+Install
+=======
+
+```
+./waf configure build install
+```
+
+If you prefer manual install path,
+
+```
+./waf configure --prefix=<install-path> build install
+```
+
+The library will be installed to <install-path>/{lib, include, bin}
+
+Usage
+=====
+
+If you want to use it with your program, see `src/command.cpp`. It's very simple example.
+
+If you want to use it as command line interface, try
+
+```
+langdetect path_1, path_2, ...
+```
+
+If you want to use it with your C program, include `langdetect_c.h` instead of `langdetect.h`
+It has just 2 API, `langdetect_detect` and `langdetect_detect_with_score`, see `src/langdetect_c.h`.
+
+
+Enjoy!!
+
 License
 =======
 
